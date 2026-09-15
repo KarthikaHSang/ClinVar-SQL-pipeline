@@ -230,5 +230,25 @@ result5 = pd.read_sql_query(query5, conn)
 print(result5)
 conn.close()
 
+cat > test_biopython.py << 'EOF'
+from Bio import Entrez, SeqIO
 
+Entrez.email = "Karthikasang@gmail.com"
+
+# TP53 protein RefSeq accession (matches the NM_000546 transcript used in your variant names)
+protein_id = "NP_000537.3"
+
+handle = Entrez.efetch(db="protein", id=protein_id, rettype="gb", retmode="text")
+record = SeqIO.read(handle, "genbank")
+handle.close()
+
+print("Protein ID:", record.id)
+print("Description:", record.description)
+print("Length:", len(record.seq))
+
+# Check what amino acid sits at position 248 (1-indexed, as HGVS notation uses)
+position = 248
+aa_at_position = record.seq[position - 1]
+print(f"Amino acid at position {position}: {aa_at_position}")
+EOF
 

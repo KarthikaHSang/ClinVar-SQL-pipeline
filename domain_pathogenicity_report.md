@@ -88,3 +88,31 @@ of independence:
 - Incorporate multiple domains per gene, ideally from UniProt
 - Extend the amino-acid-level analysis to a predictive model (see companion
   scikit-learn analysis)
+
+
+
+## Machine Learning: Predicting Pathogenicity
+
+A Random Forest classifier was trained on 5,286 variants with unambiguous
+Pathogenic/Benign labels (excluding "Uncertain significance" and "Conflicting
+classifications", which are not clean training labels), using position, gene,
+variant type, review status, number of submitters, and domain membership as
+features.
+
+**Performance** (80/20 train/test split, class-balanced weighting):
+- Pathogenic: 88% precision, 87% recall
+- Benign: 57% precision, 59% recall
+- Overall accuracy: 81%
+
+**Feature importance** ranked position and number_submitters as the strongest
+predictors, with domain membership (in_domain) the weakest (1.8%) - despite
+domain membership showing strong statistical significance in the chi-squared
+analysis above for several genes.
+
+This is not a contradiction, but a useful limitation to note: `number_submitters`
+likely acts as a confound for how long a variant has been studied rather than
+a true biological signal, and a Random Forest using raw position numbers can
+learn sharper, hotspot-specific patterns (e.g. TP53 position 248) than a coarse
+in/out-of-domain flag can capture. The statistical domain-clustering result
+and the ML feature importances are both valid; they simply surface different
+granularities of the same underlying biology.
